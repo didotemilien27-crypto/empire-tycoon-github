@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Empire Tycoon</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0f172a"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#0f172a;--s:#1e293b;--s2:#2b3a52;--g:#f59e0b;--e:#10b981;--c:#06b6d4;--r:#f43f5e;--t:#e2e8f0;--m:#94a3b8;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.4 "Avenir Next","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;padding-bottom:80px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--bg);display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--s2)}
+header div{flex:1;min-width:0}header small{display:block;color:var(--m);font-size:12px}header b{font-size:18px;color:var(--g);white-space:nowrap}
+#bal{font-size:22px;color:var(--e)}
+.ic{display:flex;gap:6px}.ic button{background:var(--s);border:1px solid var(--s2);color:var(--t);border-radius:10px;width:36px;height:36px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:14px}
+h2{margin:6px 0 4px;font-size:22px}.m{color:var(--m);font-size:13px}
+.card{background:var(--s);border:1px solid var(--s2);border-radius:14px;padding:12px;margin:10px 0}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;margin:4px 0}
+.big{font-size:20px;font-weight:700}.up{color:var(--e)}.dn{color:var(--r)}
+.b{background:linear-gradient(135deg,var(--c),#0891b2);color:#04222b;border:0;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:14px}
+.b.gold{background:linear-gradient(135deg,var(--g),#d97706);color:#2a1700}.b.red{background:var(--r);color:#fff}
+.b:disabled{opacity:.35;cursor:not-allowed}.b:focus-visible,.ic button:focus-visible,nav button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+input,select{background:var(--bg);color:var(--t);border:1px solid var(--s2);border-radius:8px;padding:8px;width:110px;font-size:14px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--s);border-top:1px solid var(--s2);padding-bottom:env(safe-area-inset-bottom,0px);z-index:11}
+nav button{flex:1;background:none;border:0;color:var(--m);padding:8px 2px;cursor:pointer;font-size:19px}
+nav button small{display:block;font-size:10.5px}nav button.on{color:var(--g);box-shadow:inset 0 2px var(--g)}
+#coin{display:block;margin:18px auto;width:190px;height:190px;border-radius:50%;border:6px solid #fbbf24;background:radial-gradient(circle at 35% 30%,#fde68a,var(--g) 60%,#b45309);color:#5a3200;font-size:84px;font-weight:800;cursor:pointer;box-shadow:0 0 40px #f59e0b66;transition:transform .08s}
+#coin:active{transform:scale(.93)}
+.fl{position:fixed;pointer-events:none;color:var(--g);font-weight:800;font-size:20px;z-index:50;transform:translate(-50%,-50%);animation:fl .8s ease-out forwards}
+@keyframes fl{to{transform:translate(-50%,-120px);opacity:0}}
+#tt{position:fixed;top:calc(70px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;width:min(90vw,380px)}
+.toast{background:var(--s2);border-left:4px solid var(--e);padding:9px 12px;border-radius:8px;animation:fl2 .25s}.toast.bad{border-color:var(--r)}
+@keyframes fl2{from{opacity:0;transform:translateY(-8px)}}
+.warn{background:#4c0519;border:1px solid var(--r);border-radius:12px;padding:12px;font-weight:600}
+.reel{font-size:40px;text-align:center;margin:8px 0}
+.bar{height:10px;border-radius:6px;background:var(--r);overflow:hidden}.bar i{display:block;height:100%;background:var(--e)}
+.modal{position:fixed;inset:0;background:#020617e6;z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.on{display:flex}.modal .card{max-width:520px;max-height:90vh;overflow:auto;border-color:var(--g)}
+.donut{width:150px;height:150px;border-radius:50%;flex:none;-webkit-mask:radial-gradient(circle,transparent 48px,#000 49px);mask:radial-gradient(circle,transparent 48px,#000 49px)}
+canvas{width:100%;height:160px;display:block}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header>
+<div><small>Solde</small><b id="bal"></b></div><div><small>Par clic</small><b id="cpc"></b></div><div><small>Par seconde</small><b id="ps"></b></div>
+<span class="ic"><button id="ins" aria-label="Installer l’application">📲</button><button id="mu" aria-label="Son">🔊</button><button id="gg" aria-label="Connexion Google">G</button><button id="st" aria-label="Avertissement">⚙</button></span>
+</header>
+<main id="v"></main><nav id="nv"></nav><div id="tt"></div>
+<div id="dm" class="modal"><div class="card"><h2>⚠️ Avertissement</h2>
+<p>AVERTISSEMENT LÉGAL ET ÉDUCATIF : Ce jeu est une simulation ludique destinée uniquement à l’entraînement, au divertissement et à la compréhension des mécanismes financiers de base. Les gains, les investissements en Bourse, l’immobilier et le casino représentés ici sont strictement virtuels. Rien dans ce jeu ne garantit des résultats dans la vie réelle ni ne constitue un conseil financier. Le créateur et le jeu se dédouanent de toute responsabilité quant à l’utilisation des informations ou comportements développés ici. Le jeu d’argent (casino) comporte des risques de perte en capital.</p>
+<button class="b gold" onclick="accept()">J’accepte et j’ai compris</button></div></div>
+<div id="im" class="modal"><div class="card"><h2>Installer l’application</h2><p id="it"></p><p><a id="ap" class="b gold" href="empire-tycoon.apk" download style="display:none;text-decoration:none">Télécharger pour Android (APK)</a></p><button class="b" onclick="$('#im').classList.remove('on')">Fermer</button></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const F=n=>{n=+n;if(!isFinite(n))return"∞";const a=Math.abs(n);if(a<1e3)return n.toFixed(a<10&&n%1?2:0);const u=["k","M","B","T","Qa","Qi"];let i=-1,v=a;while(v>=1000&&i<5){v/=1000;i++}return(n<0?"-":"")+v.toFixed(2)+u[i]};
+const M=n=>"$"+F(n);
+const D={cash:0,tot:0,clk:0,up:{},bz:Array(30).fill(0),bp:Array(30).fill(0),st:{},re:[],bet:100,cs:{w:0,g:0},best:{a:0,l:"—"},worst:{a:0,l:"—"},h:[],ok:0,mute:0,reel:"🎰 🎰 🎰",rc:"r",rn:7};
+let S;try{S=Object.assign({},D,JSON.parse(localStorage.getItem("ety1")||"{}"))}catch(e){S=Object.assign({},D)}
+const UPG=[["Souris ergonomique",15,1,0],["Café serré",100,3,0],["Stagiaire motivé",500,0,2],["Auto-clicker",2000,0,10],["Clavier mécanique",8000,25,0],["Assistant IA",30000,0,120],["Serveur d’optimisation",150000,0,700],["Cerveau quantique",1e6,500,3000]];
+const BN=["Startup SaaS","Studio de jeux vidéo","Agence IA","Cyber-sécurité","Hébergeur cloud","Application mobile","Data centers","Garage local","Lavage auto","Concessionnaire de luxe","Usine de véhicules électriques","Location de voitures","Écurie de course","Petite banque locale","Cabinet de conseil","Fonds d’investissement","Assurance","Néobanque","Courtage en ligne","Food truck","Chaîne de cafés","Boulangerie","Restaurant","Supermarché","Hôtel 5 étoiles","Centre commercial","Parc d’attractions","Studio de cinéma","Compagnie aérienne","Station spatiale"];
+const BZ=BN.map((n,i)=>[n,Math.round(150*2.3**i)]);
+const RE=[["Caravane délabrée",800],["Studio insalubre",2000],["Appartement vétuste",8000],["Maison à rénover",2e4],["Pavillon en friche",6e4],["Villa abandonnée",1.5e5],["Immeuble délabré",1.2e6],["Manoir en ruine",6e6],["Hôtel abandonné",3e7],["Château abandonné",1.5e8],["Tour de bureaux vide",1e9]].map(([n,p])=>[n,p,[.15,.2,.25].map(x=>p*x)]);
+const RN=["Plomberie","Isolation","Décoration de luxe"];
+const AS=[["NEON","Neon Corp",120],["BTC","Bitcoin",42000],["ETH","Ethereum",2400],["OR","Or",1900],["AAPL","Apple",190],["TSLA","Tesla",240]];
+const px={},ph={};AS.forEach(a=>{let p=a[2];const h=[];for(let i=0;i<40;i++){p*=1+(Math.random()-.5)*.03;h.push(p)}ph[a[0]]=h;px[a[0]]=p});
+const cv=()=>1+UPG.reduce((a,u,i)=>a+(S.up[i]||0)*u[2],0);
+const bi=i=>BZ[i][1]*.0065*S.bz[i]*(1+Math.floor(S.bz[i]/25));
+const rv=o=>RE[o.t][1]*.7+1.9*RE[o.t][2].slice(0,o.s).reduce((a,b)=>a+b,0);
+const ps=()=>UPG.reduce((a,u,i)=>a+(S.up[i]||0)*u[3],0)+S.bz.reduce((a,_,i)=>a+bi(i),0)+S.re.reduce((a,o)=>a+(o.m?rv(o)/900:0),0);
+const stV=()=>AS.reduce((a,x)=>a+((S.st[x[0]]||{q:0}).q)*px[x[0]],0);
+const bzV=()=>S.bp.reduce((a,b)=>a+b,0),reV=()=>S.re.reduce((a,o)=>a+rv(o),0);
+const net=()=>S.cash+stV()+bzV()+reV();
+function T(m,bad){const d=document.createElement("div");d.className="toast"+(bad?" bad":"");d.textContent=m;$("#tt").appendChild(d);setTimeout(()=>d.remove(),2200)}
+let ac;function sfx(g){if(S.mute)return;try{ac=ac||new AudioContext();const o=ac.createOscillator(),v=ac.createGain();o.frequency.value=g?660:180;v.gain.value=.05;o.connect(v);v.connect(ac.destination);o.start();o.stop(ac.currentTime+.07)}catch(e){}}
+function rec(l,a){if(a>S.best.a)S.best={a,l};if(a<S.worst.a)S.worst={a,l}}
+const B=(c,fn,t,x)=>`<button class="b ${x||""}" data-c="${c}" onclick="${fn}">${t}</button>`;
+function tp(e){const v=cv();S.cash+=v;S.tot+=v;S.clk++;sfx(1);const f=document.createElement("i");f.className="fl";f.textContent="+"+M(v);f.style.left=(e.clientX||innerWidth/2)+"px";f.style.top=(e.clientY||300)+"px";document.body.appendChild(f);setTimeout(()=>f.remove(),800)}
+const uc=i=>UPG[i][1]*1.2**(S.up[i]||0);
+function bu(i){const c=uc(i);if(S.cash<c)return T("Pas assez de cash",1);S.cash-=c;S.up[i]=(S.up[i]||0)+1;sfx(1);T(UPG[i][0]+" acheté");view()}
+const bc=i=>BZ[i][1]*1.18**S.bz[i];
+function bb(i){const c=bc(i);if(S.bz[i]>=100)return;if(S.cash<c)return T("Pas assez de cash",1);S.cash-=c;S.bp[i]+=c;S.bz[i]++;sfx(1);T(BZ[i][0]+" niveau "+S.bz[i]);view()}
+function bs(k,f){const c=S.cash*f;if(c<1)return T("Cash insuffisant",1);const s=S.st[k]||{q:0,c:0};s.q+=c/px[k];s.c+=c;S.st[k]=s;S.cash-=c;sfx(1);T("Achat "+k+" "+M(c));view()}
+function ss(k,f){const s=S.st[k];if(!s||s.q<=0)return T("Rien à vendre",1);const q=s.q*f,pr=q*px[k],cb=s.c*f;s.q-=q;s.c-=cb;S.cash+=pr;rec("Bourse "+k,pr-cb);T("Vendu "+M(pr)+" ("+(pr>=cb?"+":"-")+M(Math.abs(pr-cb))+")",pr<cb);sfx(1);view()}
+function rb(t){const c=RE[t][1]*.7;if(S.cash<c)return T("Pas assez de cash",1);S.cash-=c;S.re.push({t,s:0,m:0});sfx(1);T(RE[t][0]+" acheté");view()}
+function rr(j){const o=S.re[j],c=RE[o.t][2][o.s];if(S.cash<c)return T("Pas assez de cash",1);S.cash-=c;o.s++;sfx(1);T(RN[o.s-1]+" terminé");view()}
+function rf(j){const o=S.re[j],v=rv(o)*(.85+Math.random()*.3),c=RE[o.t][1]*.7+RE[o.t][2].slice(0,o.s).reduce((a,b)=>a+b,0);S.cash+=v;S.re.splice(j,1);rec("Flip "+RE[o.t][0],v-c);sfx(1);T("Revendu "+M(v),v<c);view()}
+function rl(j){S.re[j].m=1;T("Mis en location");view()}
+function play(win,mult,msg){const b=+S.bet;if(!(b>0)||b>S.cash)return T("Mise invalide",1);S.cash-=b;S.cs.w+=b;if(win){S.cash+=b*mult;S.cs.g+=b*mult}rec("Casino",win?b*(mult-1):-b);T(msg+" "+(win?"+"+M(b*(mult-1)):"-"+M(b)),!win);sfx(win);view()}
+function slots(){const w=Math.random()<.35,y=["🍒","🍋","🔔","💎","7️⃣"];let r;if(w){const s=y[Math.random()*5|0];r=[s,s,s]}else{do{r=[0,0,0].map(()=>y[Math.random()*5|0])}while(r[0]==r[1]&&r[1]==r[2])}S.reel=r.join(" ");play(w,2,w?"Jackpot !":"Perdu")}
+function roul(){const n=Math.random()*37|0,red=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36],c=S.rc;const w=c=="r"?red.includes(n):c=="b"?n>0&&!red.includes(n):n==+S.rn;play(w,c=="n"?36:2,"La bille tombe sur "+n+".")}
+function coin(){const w=Math.random()<.45;play(w,2,w?"Pile !":"Face…")}
+const spark=(h,u)=>{const mn=Math.min(...h),r=Math.max(...h)-mn||1;return`<svg width="120" height="36" viewBox="0 0 120 36"><polyline fill="none" stroke="${u?"#10b981":"#f43f5e"}" stroke-width="2" points="${h.map((v,i)=>(i*120/(h.length-1)).toFixed(1)+","+(34-(v-mn)/r*32).toFixed(1)).join(" ")}"/></svg>`};
+const V={
+tap:()=>`<button id="coin" onclick="tp(event)" aria-label="Gagner de l’argent">$</button><p class="m" style="text-align:center">${S.clk} clics, ${M(S.tot)} gagnés en tapant</p><h2>Améliorations</h2>`+UPG.map((u,i)=>`<div class="card row"><div><b>${u[0]}</b> <span class="m">×${S.up[i]||0}</span><div class="m">${u[2]?"+"+F(u[2])+" par clic":""}${u[2]&&u[3]?", ":""}${u[3]?"+"+F(u[3])+" par seconde":""}</div></div>${B(uc(i),`bu(${i})`,M(uc(i)),"gold")}</div>`).join(""),
+bourse:()=>`<h2>Bourse</h2><p class="m">Cours simulés, mis à jour toutes les 5 secondes.</p>`+AS.map(a=>{const k=a[0],p=px[k],h=ph[k],ch=(p/h[0]-1)*100,q=(S.st[k]||{q:0}).q;return`<div class="card"><div class="row"><b>${k} <span class="m">${a[1]}</span></b><span class="${ch>=0?"up":"dn"}">${ch>=0?"▲":"▼"} ${Math.abs(ch).toFixed(2)}%</span></div><div class="row"><span class="big">${M(p)}</span>${spark(h,ch>=0)}</div><div class="m">Possédé : ${q.toFixed(4)} (${M(q*p)})</div><div class="row"><span>${[.1,.5,1].map(f=>`<button class="b" onclick="bs('${k}',${f})">Acheter ${f*100}%</button> `).join("")}</span><span>${[.5,1].map(f=>`<button class="b red" onclick="ss('${k}',${f})">Vendre ${f*100}%</button> `).join("")}</span></div></div>`}).join(""),
+immo:()=>`<h2>Immobilier</h2><p class="m">Achetez un bien dégradé, rénovez-le, puis revendez-le ou louez-le.</p>`+RE.map((r,t)=>`<div class="card row"><div><b>${r[0]}</b><div class="m">Valeur actuelle ${M(r[1]*.7)}, rénovations ${M(r[2].reduce((a,b)=>a+b,0))}</div></div>${B(r[1]*.7,`rb(${t})`,"Acheter "+M(r[1]*.7),"gold")}</div>`).join("")+`<h2>Mes biens</h2>`+(S.re.length?S.re.map((o,j)=>`<div class="card"><div class="row"><b>${RE[o.t][0]}</b><span class="up">${M(rv(o))}${o.m?`, +${M(rv(o)/900)}/s`:""}</span></div><div class="m">Travaux : ${o.s}/3 ${o.s?"("+RN.slice(0,o.s).join(", ")+")":""}</div><div class="row">${o.s<3?B(RE[o.t][2][o.s],`rr(${j})`,RN[o.s]+" "+M(RE[o.t][2][o.s])):""}${o.m?"":B(0,`rl(${j})`,"Louer","gold")}<button class="b red" onclick="rf(${j})">Revendre ${M(rv(o))}</button></div></div>`).join(""):`<p class="m">Aucun bien. Achetez un studio pour commencer.</p>`),
+biz:()=>`<h2>Business</h2><p class="m">30 entreprises, niveau 100 maximum. Le revenu double tous les 25 niveaux.</p>`+BZ.map((b,i)=>{const l=S.bz[i];return`<div class="card row"><div><b>${b[0]}</b> <span class="m">niveau ${l}</span><div class="m">${l?"+"+M(bi(i))+"/s":"Pas encore créée"}</div></div>${l>=100?`<span class="up">Max</span>`:B(bc(i),`bb(${i})`,(l?"Améliorer ":"Créer ")+M(bc(i)),"gold")}</div>`}).join(""),
+casino:()=>{const c=S.cs,n=c.g-c.w;return`<div class="warn">⚠️ ATTENTION : La banque gagne toujours sur le long terme. Jouer au casino entraîne statistiquement des pertes massives. Taux moyen de perte des joueurs : 85% à 95%.</div>
+<div class="card row"><b>Mise</b><input type="number" min="1" value="${Math.floor(S.bet)}" oninput="S.bet=+this.value"><span>${[["¼",.25],["½",.5],["Max",1]].map(([t,f])=>`<button class="b" onclick="S.bet=Math.floor(S.cash*${f});view()">${t}</button> `).join("")}</span></div>
+<div class="card"><div class="row"><b>Machine à sous</b><span class="m">35% de gain, paiement ×2</span></div><div class="reel">${S.reel}</div><button class="b gold" onclick="slots()">Lancer</button></div>
+<div class="card"><div class="row"><b>Roulette</b><span class="m">Rouge/Noir 48,6% ×2, numéro 2,7% ×36</span></div><div class="row"><select onchange="S.rc=this.value">${[["r","Rouge"],["b","Noir"],["n","Numéro"]].map(o=>`<option value="${o[0]}" ${S.rc==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select><input type="number" min="0" max="36" value="${S.rn}" oninput="S.rn=this.value"><button class="b gold" onclick="roul()">Tourner</button></div></div>
+<div class="card"><div class="row"><b>Pile ou face truqué</b><span class="m">45% de doubler, 55% de tout perdre</span></div><button class="b gold" onclick="coin()">Lancer</button></div>
+<div class="card"><b>Vos statistiques</b><div class="row"><span>Total misé</span><span>${M(c.w)}</span></div><div class="row"><span>Total récupéré</span><span>${M(c.g)}</span></div><div class="row"><span>Bilan</span><b class="${n>=0?"up":"dn"}">${n>=0?"+":"-"}${M(Math.abs(n))}</b></div><div class="bar"><i style="width:${c.w?Math.min(100,c.g/c.w*100):0}%"></i></div><div class="m">Vert : part de la mise récupérée. Rouge : part perdue.</div></div>`},
+pf:()=>{const P=[["Cash",S.cash,"#f59e0b"],["Bourse",stV(),"#06b6d4"],["Business",bzV(),"#10b981"],["Immobilier",reV(),"#a78bfa"]],tt=P.reduce((a,p)=>a+p[1],0)||1;let acc=0;const g=P.map(p=>{const s=acc;acc+=p[1]/tt*100;return`${p[2]} ${s}% ${acc}%`}).join(",");
+return`<h2>Portefeuille</h2><div class="card"><small class="m">Valeur nette totale</small><div class="big up" style="font-size:30px">${M(net())}</div></div>
+<div class="card row"><div class="donut" style="background:conic-gradient(${g})"></div><div style="flex:1;min-width:150px">${P.map(p=>`<div class="row"><span><i class="dot" style="background:${p[2]}"></i>${p[0]}</span><span>${M(p[1])} <span class="m">${(p[1]/tt*100).toFixed(0)}%</span></span></div>`).join("")}</div></div>
+<div class="card"><b>Évolution de la fortune</b><canvas id="ch" width="700" height="320"></canvas></div>
+<div class="card"><div class="row"><span>Plus gros succès</span><b class="up">${M(S.best.a)} <span class="m">${S.best.l}</span></b></div><div class="row"><span>Plus grosse perte</span><b class="dn">-${M(Math.abs(S.worst.a))} <span class="m">${S.worst.l}</span></b></div></div>
+<button class="b red" onclick="if(confirm('Tout effacer et recommencer ?')){localStorage.removeItem('ety1');location.reload()}">Réinitialiser la partie</button>`}};
+S.qty=S.qty||1;S.sel=0;
+const big=(h,u)=>{const mn=Math.min(...h),r=Math.max(...h)-mn||1;return`<svg viewBox="0 0 320 120" style="width:100%;height:150px"><polyline fill="none" stroke="${u?"#10b981":"#f43f5e"}" stroke-width="2.5" points="${h.map((v,i)=>(i*320/(h.length-1)).toFixed(1)+","+(116-(v-mn)/r*112).toFixed(1)).join(" ")}"/></svg>`};
+const lst=()=>`<h2>Bourse</h2><p class="m">Touchez une action pour la trader. Cours simulés relevés toutes les 5 secondes, 1% de frais par ordre.</p>`+AS.map(a=>{const k=a[0],p=px[k],h=ph[k],ch=(p/h[0]-1)*100,q=(S.st[k]||{q:0}).q;return`<div class="card" style="cursor:pointer" onclick="S.sel='${k}';view()"><div class="row"><b>${k} <span class="m">${a[1]}</span></b><span class="${ch>=0?"up":"dn"}">${ch>=0?"▲":"▼"} ${Math.abs(ch).toFixed(2)}%</span></div><div class="row"><span class="big">${M(p)}</span>${spark(h,ch>=0)}</div><div class="m">${q>0?"Possédé : "+F(q)+" actions":"Aucune action"}</div></div>`}).join("");
+const inf=()=>{const k=S.sel,p=px[k],s=S.st[k]||{q:0,c:0},n=Math.max(1,Math.floor(S.qty||1)),pl=s.q*p*.99-s.c;return`<div class="row"><span>Actions possédées</span><b>${F(s.q)}</b></div><div class="row"><span>Valeur</span><b>${M(s.q*p)}</b></div><div class="row"><span>Gain ou perte latent</span><b class="${pl>=0?"up":"dn"}">${pl>=0?"+":"-"}${M(Math.abs(pl))}</b></div><div class="m">${n} action${n>1?"s":""} : ${M(n*p*1.01)} à l’achat, ${M(n*p*.99)} à la vente</div>`};
+const det=()=>{const k=S.sel,a=AS.find(x=>x[0]==k),p=px[k],h=ph[k],ch=(p/h[0]-1)*100;return`<button class="b" onclick="S.sel=0;view()">← Toutes les actions</button><div class="card"><div class="row"><b>${k} <span class="m">${a[1]}</span></b><span id="pc" class="${ch>=0?"up":"dn"}">${ch>=0?"▲ ":"▼ "}${Math.abs(ch).toFixed(2)}%</span></div><div class="big" id="pp" style="font-size:30px">${M(p)}</div><div id="sp">${big(h,ch>=0)}</div><div class="m">Prix relevé toutes les 5 secondes.</div></div><div class="card"><div class="row"><b>Nombre d’actions</b><input type="number" min="1" step="1" value="${S.qty}" oninput="S.qty=+this.value;$('#inf').innerHTML=inf()"><button class="b" onclick="S.qty=Math.max(1,Math.floor(S.cash/(px['${k}']*1.01)));view()">Max</button></div><div class="row"><button class="b gold" onclick="bs('${k}',S.qty)">Acheter</button><button class="b red" onclick="ss('${k}',S.qty)">Vendre</button><button class="b red" onclick="ss('${k}',Infinity)">Tout vendre</button></div><div id="inf">${inf()}</div></div>`};
+V.bourse=()=>S.sel?det():lst();
+function bs(k,n){n=Math.floor(n);if(!(n>=1))return T("Quantité invalide",1);const c=n*px[k]*1.01;if(S.cash<c)return T("Cash insuffisant",1);const s=S.st[k]||{q:0,c:0};s.q+=n;s.c+=c;S.st[k]=s;S.cash-=c;sfx(1);T("Acheté "+n+" "+k+" pour "+M(c));view()}
+function ss(k,n){const s=S.st[k];if(!s||s.q<=0)return T("Rien à vendre",1);n=Math.min(Math.floor(n),s.q);if(!(n>0))return T("Quantité invalide",1);const f=n/s.q,pr=n*px[k]*.99,cb=s.c*f;s.q-=n;s.c-=cb;S.cash+=pr;rec("Bourse "+k,pr-cb);T("Vendu "+M(pr)+" ("+(pr>=cb?"+":"-")+M(Math.abs(pr-cb))+")",pr<cb);sfx(1);view()}
+function tk(){if(tab!="bourse")return;if(!S.sel)return view();const k=S.sel,h=ph[k],ch=(px[k]/h[0]-1)*100;$("#pp").textContent=M(px[k]);$("#pc").textContent=(ch>=0?"▲ ":"▼ ")+Math.abs(ch).toFixed(2)+"%";$("#pc").className=ch>=0?"up":"dn";$("#sp").innerHTML=big(h,ch>=0);$("#inf").innerHTML=inf()}
+let DB=null,ME=null,UU=null,LB=[],PR={},un=null,lastN=-1,busy=0;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+(async()=>{try{const c=window.claude;if(!c)return;const r=await Promise.all([c.use("db"),c.use("user")]);DB=r[0];UU=r[1];if(DB&&UU)ME=await UU.id()}catch(e){}if(tab=="lb")view()})();
+async function push(){if(!DB||!ME||busy)return;const n=Math.floor(net());if(n===lastN)return;busy=1;try{await DB.collection("lb").doc(ME).set({net:n,tot:Math.floor(S.tot),t:Date.now()});lastN=n}catch(e){}busy=0}
+setInterval(push,30000);
+function watch(){if(un||!DB)return;un=DB.collection("lb").orderBy("net","desc").limit(50).onSnapshot(async s=>{LB=s.docs.map(d=>Object.assign({id:d.id},d.data()));try{PR=await UU.profiles(LB.map(x=>x.id))}catch(e){}if(tab=="lb")view()},()=>{})}
+V.lb=()=>{if(!DB||!ME)return`<h2>Classement mondial</h2><div class="card"><p>Le classement nécessite d’ouvrir la page connecté à votre compte claude.ai. Seules les personnes qui ont accès à cette page y apparaissent.</p></div>`;watch();push();return`<h2>Classement mondial</h2><p class="m">Les 50 plus grosses fortunes. Votre score est envoyé toutes les 30 secondes.</p>`+(LB.length?LB.map((x,i)=>`<div class="card row"><span><b>${i+1}.</b> ${esc((PR[x.id]||{}).name||"Joueur")}${x.id==ME?" (vous)":""}</span><b class="up">${M(x.net)}</b></div>`).join(""):`<p class="m">Aucun score pour l’instant.</p>`)};
+const TABS=[["tap","🪙","Tap"],["bourse","📈","Bourse"],["immo","🏚️","Immo"],["biz","🏢","Business"],["casino","🎰","Casino"],["pf","💼","Fortune"],["lb","🏆","Top"]];
+let tab="tap";
+$("#nv").innerHTML=TABS.map(t=>`<button data-t="${t[0]}">${t[1]}<small>${t[2]}</small></button>`).join("");
+$("#nv").onclick=e=>{const b=e.target.closest("button");if(b){tab=b.dataset.t;view();scrollTo(0,0)}};
+function aff(){document.querySelectorAll("[data-c]").forEach(b=>b.disabled=S.cash<+b.dataset.c)}
+function chart(){const c=$("#ch");if(!c)return;const x=c.getContext("2d"),h=S.h.concat([net()]),w=c.width,ht=c.height;x.clearRect(0,0,w,ht);if(h.length<2)return;const mn=Math.min(...h),r=Math.max(...h)-mn||1;x.strokeStyle="#06b6d4";x.lineWidth=3;x.beginPath();h.forEach((v,i)=>{const X=i*w/(h.length-1),Y=ht-10-(v-mn)/r*(ht-20);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}
+function view(){$("#v").innerHTML=V[tab]();document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==tab));aff();chart()}
+function head(){$("#bal").textContent=M(S.cash);$("#cpc").textContent=M(cv());$("#ps").textContent=M(ps())}
+function accept(){S.ok=1;$("#dm").classList.remove("on")}
+$("#st").onclick=()=>$("#dm").classList.add("on");
+$("#gg").onclick=()=>{const cur=btoa(unescape(encodeURIComponent(JSON.stringify(S)))),c=prompt("Votre code de sauvegarde. Collez un autre code pour importer une partie :",cur);if(c&&c!==cur){try{localStorage.setItem("ety1",decodeURIComponent(escape(atob(c))));location.reload()}catch(e){T("Code invalide",1)}}};
+$("#mu").onclick=()=>{S.mute=!S.mute;$("#mu").textContent=S.mute?"🔇":"🔊"};
+$("#mu").textContent=S.mute?"🔇":"🔊";
+if(!S.ok)$("#dm").classList.add("on");
+setInterval(()=>{S.cash+=ps()*.1;head();aff()},100);
+setInterval(()=>{AS.forEach(a=>{const k=a[0];let m=1+(Math.random()-.503)*.06;if(Math.random()<.02)m*=.75;px[k]=Math.max(1,px[k]*m);ph[k].push(px[k]);if(ph[k].length>60)ph[k].shift()});tk()},5000);
+setInterval(()=>{const r=Math.random();if(r<.2&&S.cash>100){const t=S.cash*.05;S.cash-=t;T("Contrôle fiscal : -"+M(t),1)}else if(r<.35){const a=AS[Math.random()*6|0][0];px[a]*=.7;T("Krach sur "+a+" : -30%",1)}else if(r<.5&&S.re.length){const t=Math.min(S.cash,reV()*.01);S.cash-=t;T("Taxe foncière : -"+M(t),1)}},45000);
+function save(){S.h.push(net());if(S.h.length>200)S.h.shift();try{localStorage.setItem("ety1",JSON.stringify(S))}catch(e){}}
+setInterval(()=>{save();if(tab=="pf")chart()},5000);
+addEventListener("beforeunload",save);
+view();head();
+let dp=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
+addEventListener("appinstalled",()=>{dp=null;T("Application installée")});
+fetch("empire-tycoon.apk",{method:"HEAD"}).then(r=>{if(r.ok)$("#ap").style.display="inline-block"}).catch(()=>{});
+$("#ins").onclick=async()=>{if(matchMedia("(display-mode: standalone)").matches)return T("Déjà installé sur cet appareil");if(dp){dp.prompt();try{await dp.userChoice}catch(e){}dp=null;return}const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);$("#it").textContent=ios?"Sur iPhone ou iPad : ouvrez cette page dans Safari, touchez le bouton Partager, puis « Sur l’écran d’accueil ».":"Sur ordinateur ou téléphone : dans Chrome ou Edge, ouvrez le menu ⋮ puis « Installer l’application » (ou « Ajouter à l’écran d’accueil »).";$("#im").classList.add("on")};
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script></body></html>
