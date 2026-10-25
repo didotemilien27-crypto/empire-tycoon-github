@@ -43,12 +43,13 @@ canvas{width:100%;height:160px;display:block}
 </style></head><body>
 <header>
 <div><small>Solde</small><b id="bal"></b></div><div><small>Par clic</small><b id="cpc"></b></div><div><small>Par seconde</small><b id="ps"></b></div>
-<span class="ic"><button id="mu" aria-label="Son">🔊</button><button id="gg" aria-label="Connexion Google">G</button><button id="st" aria-label="Avertissement">⚙</button></span>
+<span class="ic"><button id="ins" aria-label="Installer l’application">📲</button><button id="mu" aria-label="Son">🔊</button><button id="gg" aria-label="Connexion Google">G</button><button id="st" aria-label="Avertissement">⚙</button></span>
 </header>
 <main id="v"></main><nav id="nv"></nav><div id="tt"></div>
 <div id="dm" class="modal"><div class="card"><h2>⚠️ Avertissement</h2>
 <p>AVERTISSEMENT LÉGAL ET ÉDUCATIF : Ce jeu est une simulation ludique destinée uniquement à l’entraînement, au divertissement et à la compréhension des mécanismes financiers de base. Les gains, les investissements en Bourse, l’immobilier et le casino représentés ici sont strictement virtuels. Rien dans ce jeu ne garantit des résultats dans la vie réelle ni ne constitue un conseil financier. Le créateur et le jeu se dédouanent de toute responsabilité quant à l’utilisation des informations ou comportements développés ici. Le jeu d’argent (casino) comporte des risques de perte en capital.</p>
 <button class="b gold" onclick="accept()">J’accepte et j’ai compris</button></div></div>
+<div id="im" class="modal"><div class="card"><h2>Installer l’application</h2><p id="it"></p><p><a id="ap" class="b gold" href="empire-tycoon.apk" download style="display:none;text-decoration:none">Télécharger pour Android (APK)</a></p><button class="b" onclick="$('#im').classList.remove('on')">Fermer</button></div></div>
 <script>
 const $=s=>document.querySelector(s);
 const F=n=>{n=+n;if(!isFinite(n))return"∞";const a=Math.abs(n);if(a<1e3)return n.toFixed(a<10&&n%1?2:0);const u=["k","M","B","T","Qa","Qi"];let i=-1,v=a;while(v>=1000&&i<5){v/=1000;i++}return(n<0?"-":"")+v.toFixed(2)+u[i]};
@@ -143,5 +144,9 @@ function save(){S.h.push(net());if(S.h.length>200)S.h.shift();try{localStorage.s
 setInterval(()=>{save();if(tab=="pf")chart()},5000);
 addEventListener("beforeunload",save);
 view();head();
+let dp=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
+addEventListener("appinstalled",()=>{dp=null;T("Application installée")});
+fetch("empire-tycoon.apk",{method:"HEAD"}).then(r=>{if(r.ok)$("#ap").style.display="inline-block"}).catch(()=>{});
+$("#ins").onclick=async()=>{if(matchMedia("(display-mode: standalone)").matches)return T("Déjà installé sur cet appareil");if(dp){dp.prompt();try{await dp.userChoice}catch(e){}dp=null;return}const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);$("#it").textContent=ios?"Sur iPhone ou iPad : ouvrez cette page dans Safari, touchez le bouton Partager, puis « Sur l’écran d’accueil ».":"Sur ordinateur ou téléphone : dans Chrome ou Edge, ouvrez le menu ⋮ puis « Installer l’application » (ou « Ajouter à l’écran d’accueil »).";$("#im").classList.add("on")};
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
